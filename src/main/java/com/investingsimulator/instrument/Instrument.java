@@ -83,6 +83,7 @@ Instrument {
                                     .findAny()
                                     .orElseThrow();
 
+
         Money expectedResult = new Money(
                 startRecord.getValue().toDouble() / endRecord.getValue().toDouble(),
                 startRecord.getValue().getCurrency()

@@ -2,7 +2,7 @@ package com.investingsimulator.instrument;
 
 import java.time.LocalDate;
 
-public class InstrumentDto {
+public class InstrumentResponse {
     public int id;
 
     public String name;
@@ -15,7 +15,7 @@ public class InstrumentDto {
 
     public InstrumentResult instrumentResult;
 
-    public InstrumentDto(Instrument instrument) {
+    public InstrumentResponse(Instrument instrument) {
         this.id = instrument.getId();
         this.name = instrument.getName();
         this.underlyingIndex = instrument.getUnderlyingIndex();

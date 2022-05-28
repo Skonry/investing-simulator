@@ -3,6 +3,7 @@ package com.investingsimulator.portfolio;
 import com.investingsimulator.common.Money;
 import com.investingsimulator.common.Percentage;
 import com.investingsimulator.instrument.Instrument;
+import com.investingsimulator.instrument.InstrumentResult;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ public class Portfolio {
 
     @Id
     private  int id;
+
     private String name;
 
     @OneToMany
@@ -26,6 +28,10 @@ public class Portfolio {
         this.name = name;
         this.deposit = deposit;
         this.portfolioInstruments = new ArrayList<>();
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {
@@ -54,16 +60,16 @@ public class Portfolio {
         portfolioInstruments.remove(portfolioInstrument);
     }
 
-    public PortfolioResult getEndResult(LocalDate startDate, LocalDate endDate) {
+    public PortfolioResult calculateResult(LocalDate startDate, LocalDate endDate) {
         double value = portfolioInstruments.stream().reduce(0.0, (acc, element) -> {
             Money depositFraction = new Money(
                     element.getPercentage().getNormalized() * deposit.toDouble(),
                     deposit.getCurrency()
             );
 
-            PortfolioResult portfolioResult = element.getInstrument().calculateResult(startDate, endDate, depositFraction);
+            InstrumentResult instrumentResult = element.getInstrument().calculateResult(startDate, endDate);
 
-            return acc + portfolioResult.getExpectedResult().toDouble();
+            return acc + instrumentResult.getExpectedResult().toDouble();
         }, Double::sum);
 
         Money expectedResult = new Money(value, deposit.getCurrency());

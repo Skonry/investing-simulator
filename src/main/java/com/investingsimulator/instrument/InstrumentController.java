@@ -11,17 +11,17 @@ import java.util.List;
 @RequestMapping("/api/instrument")
 public class InstrumentController {
 
-    private InstrumentsService instrumentsService;
+    private InstrumentService instrumentService;
 
     @Autowired
-    public InstrumentController(InstrumentsService instrumentsService) {
-        this.instrumentsService = instrumentsService;
+    public InstrumentController(InstrumentService instrumentService) {
+        this.instrumentService = instrumentService;
     }
 
     @GetMapping
-    public List<InstrumentDto> index() {
-        List<Instrument> instruments = instrumentsService.getInstruments();
+    public List<InstrumentResponse> index() {
+        List<Instrument> instruments = instrumentService.getInstruments();
 
-        return instruments.stream().map(InstrumentDto::new).toList();
+        return instruments.stream().map(InstrumentResponse::new).toList();
     }
 }

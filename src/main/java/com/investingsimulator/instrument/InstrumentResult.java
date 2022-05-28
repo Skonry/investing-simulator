@@ -6,10 +6,13 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class InstrumentResult {
+
     private LocalDate startDate;
+
     private LocalDate endDate;
+
     private Money expectedResult;
-    private double returnOfInvestment;
+
     private double rateOfReturn;
 
     public InstrumentResult(LocalDate startDate, LocalDate endDate, Money expectedResult) {
@@ -29,10 +32,6 @@ public class InstrumentResult {
 
     public Money getExpectedResult() {
         return expectedResult;
-    }
-
-    public double getReturnOfInvestment() {
-        return returnOfInvestment;
     }
 
     public double getRateOfReturn() {

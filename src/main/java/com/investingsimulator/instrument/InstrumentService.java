@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-public class InstrumentsService {
+public class InstrumentService {
 
     private InstrumentRepository instrumentRepository;
 
     @Autowired
-    public InstrumentsService(InstrumentRepository instrumentRepository) {
+    public InstrumentService(InstrumentRepository instrumentRepository) {
         this.instrumentRepository = instrumentRepository;
     }
     public List<Instrument> getInstruments() {
