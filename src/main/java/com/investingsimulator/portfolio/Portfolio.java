@@ -62,14 +62,11 @@ public class Portfolio {
 
     public PortfolioResult calculateResult(LocalDate startDate, LocalDate endDate) {
         double value = portfolioInstruments.stream().reduce(0.0, (acc, element) -> {
-            Money depositFraction = new Money(
-                    element.getPercentage().getNormalized() * deposit.toDouble(),
-                    deposit.getCurrency()
-            );
-
             InstrumentResult instrumentResult = element.getInstrument().calculateResult(startDate, endDate);
 
-            return acc + instrumentResult.getExpectedResult().toDouble();
+            double resultModifiedByDepositFraction = element.getPercentage().getNormalized() * deposit.toDouble();
+
+            return acc + resultModifiedByDepositFraction;
         }, Double::sum);
 
         Money expectedResult = new Money(value, deposit.getCurrency());

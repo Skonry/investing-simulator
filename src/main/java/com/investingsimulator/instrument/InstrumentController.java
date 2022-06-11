@@ -1,11 +1,9 @@
 package com.investingsimulator.instrument;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/instrument")
@@ -19,9 +17,16 @@ public class InstrumentController {
     }
 
     @GetMapping
-    public List<InstrumentResponse> index() {
-        List<Instrument> instruments = instrumentService.getInstruments();
+    public Page<InstrumentResponse> index(Pageable pageable) {
+        Page<Instrument> instrumentsPage = instrumentService.getInstruments(pageable);
 
-        return instruments.stream().map(InstrumentResponse::new).toList();
+        return instrumentsPage.map(InstrumentResponse::new);
+    }
+
+    @GetMapping("/{id}")
+    public InstrumentResponse show(@PathVariable int id) {
+        Instrument instrument = instrumentService.getInstrument(id);
+
+        return new InstrumentResponse(instrument);
     }
 }

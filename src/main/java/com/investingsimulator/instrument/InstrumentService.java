@@ -1,8 +1,8 @@
 package com.investingsimulator.instrument;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public class InstrumentService {
 
@@ -12,7 +12,14 @@ public class InstrumentService {
     public InstrumentService(InstrumentRepository instrumentRepository) {
         this.instrumentRepository = instrumentRepository;
     }
-    public List<Instrument> getInstruments() {
-        return instrumentRepository.findAll();
+
+    public Page<Instrument> getInstruments(Pageable pageable) {
+        return instrumentRepository.findAll(pageable);
+    }
+
+    public Instrument getInstrument(int id) {
+        Instrument instrument = instrumentRepository.findById(id).orElseThrow();
+
+        return instrument;
     }
 }

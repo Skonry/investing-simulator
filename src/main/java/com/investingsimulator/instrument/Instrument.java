@@ -1,7 +1,6 @@
 package com.investingsimulator.instrument;
 
-import com.investingsimulator.common.Money;
-import com.investingsimulator.portfolio.PortfolioResult;
+import com.investingsimulator.common.Percentage;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -84,9 +83,8 @@ Instrument {
                                     .orElseThrow();
 
 
-        Money expectedResult = new Money(
-                startRecord.getValue().toDouble() / endRecord.getValue().toDouble(),
-                startRecord.getValue().getCurrency()
+        Percentage expectedResult = new Percentage(
+                endRecord.getValue().toDouble() / startRecord.getValue().toDouble() * 50
         );
 
         return new InstrumentResult(startDate, endDate, expectedResult);
