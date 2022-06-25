@@ -1,11 +1,9 @@
 package com.investingsimulator.instrument;
 
 import com.investingsimulator.common.Percentage;
+import org.apache.tomcat.jni.Local;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,6 +13,7 @@ public class
 Instrument {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
 
@@ -24,7 +23,9 @@ Instrument {
 
     private LocalDate dateOfFirstQuotation;
 
-    @OneToMany
+    private LocalDate dateOfLastQuotation;
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<PriceRecord> priceRecords;
 
     public Instrument(
@@ -38,8 +39,11 @@ Instrument {
         this.underlyingIndex = underlyingIndex;
         this.issuer = issuer;
         this.dateOfFirstQuotation = dateOfFirstQuotation;
+        this.dateOfLastQuotation = priceRecords.get(priceRecords.size() - 1).getDate();
         this.priceRecords = priceRecords;
     }
+
+    public Instrument() {}
 
     public int getId() {
         return id;
@@ -60,6 +64,8 @@ Instrument {
     public LocalDate getDateOfFirstQuotation() {
         return dateOfFirstQuotation;
     }
+
+    public LocalDate getDateOfLastQuotation() { return dateOfLastQuotation; }
 
     public List<PriceRecord> getPriceRecords() {
         return priceRecords;

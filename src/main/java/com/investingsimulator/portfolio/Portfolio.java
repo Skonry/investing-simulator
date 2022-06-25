@@ -14,14 +14,14 @@ import java.util.*;
 public class Portfolio {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private  int id;
 
     private String name;
 
     @OneToMany
-    private final List<PortfolioInstrument> portfolioInstruments;
+    private List<PortfolioInstrument> portfolioInstruments;
 
-    @OneToOne
     private Money deposit;
 
     public Portfolio(String name, Money deposit) {
@@ -29,6 +29,8 @@ public class Portfolio {
         this.deposit = deposit;
         this.portfolioInstruments = new ArrayList<>();
     }
+
+    public Portfolio() {}
 
     public int getId() {
         return id;

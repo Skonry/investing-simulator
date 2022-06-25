@@ -4,7 +4,9 @@ import com.investingsimulator.common.Percentage;
 import com.investingsimulator.instrument.Instrument;
 import com.investingsimulator.instrument.InstrumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PortfolioService {
 
     private PortfolioRepository portfolioRepository;

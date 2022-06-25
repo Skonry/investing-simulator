@@ -1,14 +1,13 @@
 package com.investingsimulator.user;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     private String email;
@@ -19,6 +18,8 @@ public class User {
         this.email = email;
         this.password = password;
     }
+
+    public User() {}
 
     public int getId() {
         return id;

@@ -1,25 +1,21 @@
 package com.investingsimulator.common;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-@Entity
-@Table(name =  "moneys")
+@Embeddable
 public class Money {
-
-    @Id
-    private int id;
-    private double value;
+    private double amount;
     private Currency currency;
 
-    public Money(double value, Currency currency) {
-        this.value = value;
+    public Money(double amount, Currency currency) {
+        this.amount = amount;
         this.currency = currency;
     }
 
+    public Money() {}
+
     public double toDouble() {
-        return value;
+        return amount;
     }
 
     public Currency getCurrency() {

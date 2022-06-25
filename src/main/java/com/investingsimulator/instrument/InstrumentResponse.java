@@ -13,6 +13,8 @@ public class InstrumentResponse {
 
     public LocalDate dateOfFirstQuotation;
 
+    public LocalDate dateOfLastQuotation;
+
     public InstrumentResult instrumentResult;
 
     public InstrumentResponse(Instrument instrument) {
@@ -21,9 +23,10 @@ public class InstrumentResponse {
         this.underlyingIndex = instrument.getUnderlyingIndex();
         this.issuer = instrument.getIssuer();
         this.dateOfFirstQuotation = instrument.getDateOfFirstQuotation();
+        this.dateOfLastQuotation = instrument.getDateOfLastQuotation();
         this.instrumentResult = instrument.calculateResult(
                 this.dateOfFirstQuotation,
-                LocalDate.now()
+                this.dateOfLastQuotation
         );
     }
 }

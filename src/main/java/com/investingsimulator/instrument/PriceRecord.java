@@ -2,10 +2,7 @@ package com.investingsimulator.instrument;
 
 import com.investingsimulator.common.Money;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 
@@ -14,19 +11,21 @@ import java.time.LocalDate;
 public class PriceRecord {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @OneToOne
-    private Money value;
+    private Money amount;
     private LocalDate date;
 
-    public PriceRecord(Money value, LocalDate date) {
-        this.value = value;
+    public PriceRecord(Money amount, LocalDate date) {
+        this.amount = amount;
         this.date = date;
     }
 
+    public PriceRecord() {}
+
     public Money getValue() {
-        return value;
+        return amount;
     }
 
     public LocalDate getDate() {
