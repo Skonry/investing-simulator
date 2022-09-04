@@ -5,6 +5,7 @@ import org.apache.tomcat.jni.Local;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Entity
@@ -88,11 +89,12 @@ Instrument {
                                     .findAny()
                                     .orElseThrow();
 
+        double returnOnInvestment = (endRecord.getValue().toDouble() - startRecord.getValue().toDouble())
+                / startRecord.getValue().toDouble()
+                * 100;
 
-        Percentage expectedResult = new Percentage(
-                endRecord.getValue().toDouble() / startRecord.getValue().toDouble() * 50
-        );
+        double rateOfReturn =  returnOnInvestment / ChronoUnit.YEARS.between(startDate, endDate);
 
-        return new InstrumentResult(startDate, endDate, expectedResult);
+        return new InstrumentResult(this, returnOnInvestment, rateOfReturn);
     }
 }

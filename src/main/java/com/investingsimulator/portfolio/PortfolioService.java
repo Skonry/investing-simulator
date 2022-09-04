@@ -6,6 +6,8 @@ import com.investingsimulator.instrument.InstrumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class PortfolioService {
 
@@ -23,11 +25,9 @@ public class PortfolioService {
         return portfolioRepository.findById(id).orElseThrow();
     }
 
-    public void addInstrument(int portfolioId, AddInstrumentRequest addInstrumentRequest) {
-        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow();
+    public PortfolioResult getPortfolioResult(int id, LocalDate startDate, LocalDate endDate) {
+        Portfolio portfolio = portfolioRepository.findById(id).orElseThrow();
 
-        Instrument instrument = instrumentRepository.findById(addInstrumentRequest.instrumentId).orElseThrow();
-
-        portfolio.addInstrument(instrument, new Percentage(addInstrumentRequest.percentage));
+        return portfolio.calculateResult(startDate, endDate);
     }
 }

@@ -7,6 +7,7 @@ import com.investingsimulator.instrument.InstrumentResult;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Entity
@@ -27,7 +28,6 @@ public class Portfolio {
     public Portfolio(String name, Money deposit) {
         this.name = name;
         this.deposit = deposit;
-        this.portfolioInstruments = new ArrayList<>();
     }
 
     public Portfolio() {}
@@ -52,27 +52,35 @@ public class Portfolio {
         this.deposit = deposit;
     }
 
-    public void addInstrument(Instrument instrument, Percentage percentage) {
-        PortfolioInstrument portfolioInstrument = new PortfolioInstrument(instrument, percentage);
-
-        portfolioInstruments.add(portfolioInstrument);
-    }
-
-    public void removeInstrument(PortfolioInstrument portfolioInstrument) {
-        portfolioInstruments.remove(portfolioInstrument);
-    }
-
     public PortfolioResult calculateResult(LocalDate startDate, LocalDate endDate) {
-        double value = portfolioInstruments.stream().reduce(0.0, (acc, element) -> {
-            InstrumentResult instrumentResult = element.getInstrument().calculateResult(startDate, endDate);
+        List<PortfolioInstrumentResult> portfolioInstrumentResults = portfolioInstruments
+                .stream()
+                .map((portfolioInstrument -> {
+                    InstrumentResult instrumentResult = portfolioInstrument
+                            .getInstrument()
+                            .calculateResult(startDate, endDate);
 
-            double resultModifiedByDepositFraction = element.getPercentage().getNormalized() * deposit.toDouble();
+                    return new PortfolioInstrumentResult(
+                            instrumentResult.returnOnInvestment(),
+                            instrumentResult.rateOfReturn(),
+                            portfolioInstrument.getPercentage()
+                    );
+                }))
+                .toList();
 
-            return acc + resultModifiedByDepositFraction;
-        }, Double::sum);
 
-        Money expectedResult = new Money(value, deposit.getCurrency());
+        double returnOnInvestment = portfolioInstrumentResults
+                .stream()
+                .reduce(0.0, (acc, element) -> {
 
-        return new PortfolioResult(startDate, endDate, deposit, expectedResult);
+                    double resultModifiedByDepositFraction = element.returnOnInvestment() * (deposit.toDouble() / 100);
+
+                    return acc + resultModifiedByDepositFraction;
+                }, Double::sum)
+                / portfolioInstrumentResults.size();
+
+        double rateOfReturn =  returnOnInvestment / ChronoUnit.YEARS.between(startDate, endDate);
+
+        return new PortfolioResult(this, portfolioInstrumentResults, returnOnInvestment, rateOfReturn);
     }
 }

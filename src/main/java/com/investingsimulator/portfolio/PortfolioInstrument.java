@@ -17,23 +17,28 @@ public class PortfolioInstrument {
     @OneToOne
     private final Instrument instrument;
 
-    @Convert(converter = PercentageAttributeConverter.class)
-    private Percentage percentage;
+    @OneToOne
+    private  final  Portfolio portfolio;
 
-    public PortfolioInstrument(Instrument instrument, Percentage percentage) {
+    private double percentage;
+
+    public PortfolioInstrument(Portfolio portfolio, Instrument instrument, double percentage) {
+        this.portfolio = portfolio;
         this.instrument = instrument;
         this.percentage = percentage;
     }
+
+    public int getId() { return id; }
 
     public Instrument getInstrument() {
         return instrument;
     }
 
-    public Percentage getPercentage() {
+    public double getPercentage() {
         return percentage;
     }
 
-    public void setPercentage(Percentage percentage) {
+    public void setPercentage(double percentage) {
         this.percentage = percentage;
     }
 }

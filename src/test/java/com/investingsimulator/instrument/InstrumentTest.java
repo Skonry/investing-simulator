@@ -15,7 +15,8 @@ public class InstrumentTest {
 
     private final List<PriceRecord> priceRecords = List.of(
             new PriceRecord(new Money(10, Currency.USD), LocalDate.of(2020, 1, 1)),
-            new PriceRecord(new Money(20, Currency.USD), LocalDate.of(2021, 1, 1))
+            new PriceRecord(new Money(15, Currency.USD), LocalDate.of(2021, 1, 1)),
+            new PriceRecord(new Money(20, Currency.USD), LocalDate.of(2022, 1, 1))
     );
 
     private final Instrument instrument = new Instrument(
@@ -30,19 +31,19 @@ public class InstrumentTest {
     void properlyCalculateResult() {
         InstrumentResult instrumentResult = instrument.calculateResult(
                 LocalDate.of(2020, 1, 1),
-                LocalDate.of(2021, 1, 1)
+                LocalDate.of(2022, 1, 1)
         );
 
-        assertEquals(instrumentResult.getExpectedResult().getValue(), 100);
-        assertEquals(instrumentResult.getRateOfReturn().getValue(), 100);
+        assertEquals(100, instrumentResult.returnOnInvestment());
+        assertEquals(50, instrumentResult.rateOfReturn());
     }
 
     @Test
-    void throwException() {
+    void throwExceptionIfNotFoundPriceRecord() {
         assertThrows(
                 NoSuchElementException.class,
                 () -> {
-                    InstrumentResult instrumentResult = instrument.calculateResult(
+                    instrument.calculateResult(
                             LocalDate.of(1900, 1, 1),
                             LocalDate.of(2100, 1, 1)
                     );
