@@ -15,8 +15,8 @@ public class InstrumentTest {
 
     private final List<PriceRecord> priceRecords = List.of(
             new PriceRecord(new Money(10, Currency.USD), LocalDate.of(2020, 1, 1)),
-            new PriceRecord(new Money(15, Currency.USD), LocalDate.of(2021, 1, 1)),
-            new PriceRecord(new Money(20, Currency.USD), LocalDate.of(2022, 1, 1))
+            new PriceRecord(new Money(20, Currency.USD), LocalDate.of(2021, 1, 1)),
+            new PriceRecord(new Money(30, Currency.USD), LocalDate.of(2022, 1, 1))
     );
 
     private final Instrument instrument = new Instrument(
@@ -34,8 +34,8 @@ public class InstrumentTest {
                 LocalDate.of(2022, 1, 1)
         );
 
-        assertEquals(100, instrumentResult.returnOnInvestment());
-        assertEquals(50, instrumentResult.rateOfReturn());
+        assertEquals(200, instrumentResult.returnOnInvestment());
+        assertEquals(100, instrumentResult.rateOfReturn());
     }
 
     @Test

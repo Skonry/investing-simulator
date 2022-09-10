@@ -3,6 +3,7 @@ package com.investingsimulator.portfolio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@RestController
 @RequestMapping("/api/portfolio/{portfolioId}/instrument")
 public class PortfolioInstrumentController {
     private PortfolioInstrumentService portfolioInstrumentService;
@@ -21,7 +22,10 @@ public class PortfolioInstrumentController {
     }
 
     @DeleteMapping("/{id}")
-    public void removeInstrument(@PathVariable("id") int id) {
-        portfolioInstrumentService.removeInstrument(id);
+    public void removeInstrument(
+            @PathVariable("portfolioId") int portfolioId,
+            @PathVariable("id") int id
+    ) {
+        portfolioInstrumentService.removeInstrument(portfolioId, id);
     }
 }

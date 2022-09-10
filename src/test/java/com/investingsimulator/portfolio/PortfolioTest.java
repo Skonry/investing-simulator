@@ -3,16 +3,13 @@ package com.investingsimulator.portfolio;
 import com.investingsimulator.common.Currency;
 import com.investingsimulator.common.Money;
 import com.investingsimulator.instrument.Instrument;
-import com.investingsimulator.instrument.InstrumentResult;
 import com.investingsimulator.instrument.PriceRecord;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PortfolioTest {
     @Test
@@ -41,10 +38,13 @@ public class PortfolioTest {
                 )
         );
 
-        final Portfolio portfolio = new Portfolio("Portfolio Name", new Money(100, Currency.USD));
+        final Portfolio portfolio = new Portfolio(
+                "Portfolio Name",
+                new Money(100, Currency.USD)
+        );
 
-        new PortfolioInstrument(portfolio, instrument1, 50);
-        new PortfolioInstrument(portfolio, instrument2, 50);
+        portfolio.addInstrument(instrument1, 50);
+        portfolio.addInstrument(instrument2, 50);
 
         PortfolioResult portfolioResult = portfolio.calculateResult(
                 LocalDate.of(2020, 1, 1),
@@ -81,32 +81,20 @@ public class PortfolioTest {
                 )
         );
 
-        final Portfolio portfolio = new Portfolio("Portfolio Name", new Money(100, Currency.USD));
+        final Portfolio portfolio = new Portfolio(
+                "Portfolio Name",
+                new Money(100, Currency.USD)
+        );
 
-        new PortfolioInstrument(portfolio, instrument1, 20);
-        new PortfolioInstrument(portfolio, instrument2, 80);
+        portfolio.addInstrument(instrument1, 20);
+        portfolio.addInstrument(instrument2, 80);
 
         PortfolioResult portfolioResult = portfolio.calculateResult(
                 LocalDate.of(2020, 1, 1),
                 LocalDate.of(2022, 1, 1)
         );
 
-        assertEquals(220, portfolioResult.returnOnInvestment());
-        assertEquals(110, portfolioResult.rateOfReturn());
-    }
-
-    @Test
-    void throwExceptionIfNotFoundPriceRecord() {
-        final Portfolio portfolio = new Portfolio("Portfolio Name", new Money(100, Currency.USD));
-
-        assertThrows(
-                NoSuchElementException.class,
-                () -> {
-                    portfolio.calculateResult(
-                            LocalDate.of(1900, 1, 1),
-                            LocalDate.of(2100, 1, 1)
-                    );
-                }
-        );
+        assertEquals(280, portfolioResult.returnOnInvestment());
+        assertEquals(140, portfolioResult.rateOfReturn());
     }
 }

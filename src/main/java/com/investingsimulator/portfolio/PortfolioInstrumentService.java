@@ -3,7 +3,9 @@ package com.investingsimulator.portfolio;
 import com.investingsimulator.instrument.Instrument;
 import com.investingsimulator.instrument.InstrumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PortfolioInstrumentService {
     private final PortfolioRepository portfolioRepository;
     private final InstrumentRepository instrumentRepository;
@@ -25,16 +27,16 @@ public class PortfolioInstrumentService {
 
         Instrument instrument = instrumentRepository.findById(addInstrumentRequest.instrumentId()).orElseThrow();
 
-        PortfolioInstrument portfolioInstrument = new PortfolioInstrument(
-                portfolio,
-                instrument,
-                addInstrumentRequest.percentage()
-        );
+        portfolio.addInstrument(instrument, addInstrumentRequest.percentage());
 
-        portfolioInstrumentRepository.save(portfolioInstrument);
+        portfolioRepository.save(portfolio);
     }
 
-    public void removeInstrument(int id) {
-        portfolioInstrumentRepository.deleteById(id);
+    public void removeInstrument(int portfolioId, int id) {
+        Portfolio portfolio = portfolioRepository.findById(portfolioId).orElseThrow();
+
+        portfolio.removeInstrument(id);
+
+        portfolioRepository.save(portfolio);
     }
 }

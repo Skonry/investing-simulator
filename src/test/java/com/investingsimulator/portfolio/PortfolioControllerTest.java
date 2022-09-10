@@ -7,23 +7,18 @@ import com.investingsimulator.instrument.Instrument;
 import com.investingsimulator.instrument.InstrumentRepository;
 import com.investingsimulator.instrument.PriceRecord;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -56,9 +51,26 @@ public class PortfolioControllerTest {
 
         @Test
         void shouldReturnPortfolio() throws Exception {
-            Portfolio portfolio = portfolioRepository.save(
-                    new Portfolio("Portfolio Name", new Money(100, Currency.USD))
+            Instrument instrument = instrumentRepository.save(new Instrument(
+                    "InstrumentName1",
+                    "IndexName1",
+                    "Issuer",
+                    LocalDate.of(2020, 1, 1),
+                    List.of(
+                            new PriceRecord(new Money(10, Currency.USD), LocalDate.of(2020, 1, 1)),
+                            new PriceRecord(new Money(15, Currency.USD), LocalDate.of(2021, 1, 1)),
+                            new PriceRecord(new Money(20, Currency.USD), LocalDate.of(2022, 1, 1))
+                    )
+            ));
+
+            Portfolio portfolio = new Portfolio(
+                    "Portfolio Name",
+                    new Money(100, Currency.USD)
             );
+
+            portfolio.addInstrument(instrument, 100);
+
+            portfolioRepository.save(portfolio);
 
             mockMvc.perform(MockMvcRequestBuilders
                     .get("/api/portfolio/{id}", portfolio.getId())
@@ -71,6 +83,7 @@ public class PortfolioControllerTest {
     class Result {
         @AfterEach
         private void clearTestData() {
+            portfolioInstrumentRepository.deleteAll();
             portfolioRepository.deleteAll();
             instrumentRepository.deleteAll();
         }
@@ -89,14 +102,14 @@ public class PortfolioControllerTest {
                     )
             ));
 
-            Portfolio portfolio = portfolioRepository.save(
-                    new Portfolio("Portfolio Name", new Money(100, Currency.USD))
+            Portfolio portfolio = new Portfolio(
+                    "Portfolio Name",
+                    new Money(100, Currency.USD)
             );
 
+            portfolio.addInstrument(instrument, 100);
 
-            PortfolioInstrument portfolioInstrument = portfolioInstrumentRepository.save(
-                    new PortfolioInstrument(portfolio, instrument, 100)
-            );
+            portfolioRepository.save(portfolio);
 
             mockMvc.perform(MockMvcRequestBuilders
                             .get("/api/portfolio/{id}/result", portfolio.getId())
@@ -104,7 +117,7 @@ public class PortfolioControllerTest {
                             .param("endDate", "2022-01-01")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.content", hasSize(7)));
+                    .andExpect(jsonPath("$.returnOnInvestment", is(200.0)));
         }
     }
 }

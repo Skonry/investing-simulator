@@ -8,7 +8,6 @@ import com.investingsimulator.instrument.Instrument;
 import com.investingsimulator.instrument.InstrumentRepository;
 import com.investingsimulator.instrument.PriceRecord;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +17,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = InvestingSimulatorApplication.class)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class PortfolioInstrumentControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -75,7 +66,10 @@ public class PortfolioInstrumentControllerTest {
             ));
 
             Portfolio portfolio = portfolioRepository.save(
-                    new Portfolio("Portfolio Name", new Money(100, Currency.USD))
+                    new Portfolio(
+                            "Portfolio Name",
+                            new Money(100, Currency.USD)
+                    )
             );
 
             AddInstrumentRequest addInstrumentRequest = new AddInstrumentRequest(instrument.getId(), 50);
@@ -92,8 +86,8 @@ public class PortfolioInstrumentControllerTest {
     class RemoveInstrument {
         @AfterEach
         private void clearTestData() {
-            portfolioRepository.deleteAll();
             portfolioInstrumentRepository.deleteAll();
+            portfolioRepository.deleteAll();
             instrumentRepository.deleteAll();
         }
 
@@ -111,23 +105,25 @@ public class PortfolioInstrumentControllerTest {
                     )
             ));
 
-            Portfolio portfolio = portfolioRepository.save(
-                    new Portfolio("Portfolio Name", new Money(100, Currency.USD))
+            Portfolio portfolio = new Portfolio(
+                    "Portfolio Name",
+                    new Money(100, Currency.USD)
             );
 
+            portfolio.addInstrument(instrument, 100);
 
-            PortfolioInstrument portfolioInstrument = portfolioInstrumentRepository.save(
-                    new PortfolioInstrument(portfolio, instrument, 100)
-            );
+            portfolioRepository.save(portfolio);
 
             mockMvc.perform(MockMvcRequestBuilders
                     .delete(
                             "/api/portfolio/{portfolioId}/instrument/{id}",
                             portfolio.getId(),
-                            portfolioInstrument.getId()
+                            portfolio.getPortfolioInstruments().get(0).getId()
                     )
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
+
+            assertEquals(0, portfolioRepository.findById(portfolio.getId()).get().getPortfolioInstruments().size());
         }
     }
 }

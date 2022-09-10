@@ -13,15 +13,14 @@ import java.util.*;
 @Entity
 @Table(name = "portfolios")
 public class Portfolio {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private  int id;
 
     private String name;
 
-    @OneToMany
-    private List<PortfolioInstrument> portfolioInstruments;
+    @OneToMany(mappedBy = "portfolio", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<PortfolioInstrument> portfolioInstruments = new ArrayList<>();
 
     private Money deposit;
 
@@ -44,12 +43,30 @@ public class Portfolio {
         return deposit;
     }
 
-    public List<PortfolioInstrument> getPortfolioInstruments() {
-        return portfolioInstruments;
-    }
+    public List<PortfolioInstrument> getPortfolioInstruments() { return portfolioInstruments; }
 
     public void setDeposit(Money deposit) {
         this.deposit = deposit;
+    }
+
+    public void addInstrument(Instrument instrument, double percentage) {
+        PortfolioInstrument portfolioInstrument = new PortfolioInstrument(percentage, instrument);
+
+        portfolioInstruments.add(portfolioInstrument);
+
+        portfolioInstrument.setPortfolio(this);
+    }
+
+    public void removeInstrument(int id) {
+        PortfolioInstrument portfolioInstrument = portfolioInstruments.stream()
+                .filter(element -> element.getId() ==id)
+                .findAny()
+                .orElseThrow();
+
+        portfolioInstruments.remove(portfolioInstrument);
+
+        portfolioInstrument.setPortfolio(null);
+        portfolioInstrument.setInstrument(null);
     }
 
     public PortfolioResult calculateResult(LocalDate startDate, LocalDate endDate) {
@@ -69,15 +86,16 @@ public class Portfolio {
                 .toList();
 
 
+
         double returnOnInvestment = portfolioInstrumentResults
                 .stream()
                 .reduce(0.0, (acc, element) -> {
 
-                    double resultModifiedByDepositFraction = element.returnOnInvestment() * (deposit.toDouble() / 100);
+                    double resultModifiedByDepositFraction =
+                            (element.returnOnInvestment() / 100 + 1) * deposit.toDouble() * (element.percentage() / 100);
 
                     return acc + resultModifiedByDepositFraction;
-                }, Double::sum)
-                / portfolioInstrumentResults.size();
+                }, Double::sum);
 
         double rateOfReturn =  returnOnInvestment / ChronoUnit.YEARS.between(startDate, endDate);
 
