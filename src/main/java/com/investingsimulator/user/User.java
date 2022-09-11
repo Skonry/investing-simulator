@@ -5,17 +5,16 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    private String email;
+    private String username;
 
     private String password;
 
-    public User (String email, String password) {
-        this.email = email;
+    public User (String username, String password) {
+        this.username = username;
         this.password = password;
     }
 
@@ -25,8 +24,8 @@ public class User {
         return id;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {

@@ -42,6 +42,38 @@ public class PortfolioControllerTest {
     private PortfolioInstrumentRepository portfolioInstrumentRepository;
 
     @Nested
+    class Index {
+        @AfterEach
+        private void clearTestData() {
+            portfolioRepository.deleteAll();
+            instrumentRepository.deleteAll();
+        }
+
+        @Test
+        void shouldReturnPortfolios() throws Exception {
+            Portfolio portfolio1 = new Portfolio(
+                    "Portfolio Name 1",
+                    new Money(100, Currency.USD)
+            );
+
+            Portfolio portfolio2 = new Portfolio(
+                    "Portfolio Name 2",
+                    new Money(100, Currency.USD)
+            );
+
+            portfolioRepository.save(portfolio1);
+
+            portfolioRepository.save(portfolio2);
+
+            mockMvc.perform(MockMvcRequestBuilders
+                            .get("/api/portfolio")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(2)));
+        }
+    }
+
+    @Nested
     class Show {
         @AfterEach
         private void clearTestData() {
